@@ -27,6 +27,7 @@ Q = zeros(num_states, num_actions);
 %s_ = cell(size(T), num_its);
 %a_ = cell(size(T,1), num_its);
 Q_eps = cell(num_eps, 1);
+goals = randi([2,num_states], num_eps, num_its);    %create random goal positions, store in num_eps x num_its matrix
 
 for episode = 1:num_eps
     %t = episode;    %extra variable t to make Q equation look cleaner
@@ -37,17 +38,39 @@ for episode = 1:num_eps
         %find max reward in row of Q-table corresponding with current state
         [maxReward, a_next] = max(Q(s_t));
         
-        %take action and observe
-        
-        if a_next == 1
-            %observe
-        elseif a_next == 2
-            %observe
-        elseif a_next == 3
-            %
-        else
-            %
+        %take action
+        if a_next == 1  %up
+            if s_t >= 1 && s_t <= grid_size %robot is currently in top row of grid
+                %do not move out of grid. do nothing
+                s_next = s_t;
+            else %robot is able to move up
+                s_next = s_t - grid_size;
+            end
+        elseif a_next == 2  %down
+            if s_t <= num_states && s_t > num_states - grid_size %robot is currently in bottom row of grid
+                %do not move out of grid. do nothing
+                s_next = s_t;
+            else %robot is able to move down
+                s_next = s_t + grid_size;
+            end
+        elseif a_next == 3 %right
+            if mod(s_t, grid_size) == 0 %robot is currently in rightmost column of grid
+                %do not move out of grid. do nothing
+                s_next = s_t;
+            else %robot is able to move right
+                s_next = s_t + 1;
+            end
+        else   %left
+            if mod(s_t, grid_size) == 1 %robot is currently in leftmost column of grid
+                %do not move out of grid. do nothing
+                s_next = s_t;
+            else % robot is able to move left
+                s_next = s_t - 1;
+            end
         end
+        
+        %assign reward from new state after taken action
+        
         
         %Q = Q + alpha * ();
         %FROM SLIDES: Q (s_{t}, a_{t})(k) = Q(s_{t}, a_{t})(k-1) + alpha [ r_{t+1} + gamma * Q(s_{t+1}, a_{t+1})(k-1)- Q(s_{t}, a_{t})(k-1)]
