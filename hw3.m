@@ -70,7 +70,17 @@ for episode = 1:num_eps
         end
         
         %assign reward from new state after taken action
-        
+        if s_next == goals(episode,iteration)
+           %robot reached goal
+           r = 100;
+           iteration = num_its; %end the episode
+        elseif (s_next >= 1 && s_next <= grid_size) || (mod(s_next, grid_size) == 0) || (mod(s_next, grid_size) == 1)
+            %robot now in border cell
+            r = -1;
+        else
+            %all other actions
+            r = 0;
+        end
         
         %Q = Q + alpha * ();
         %FROM SLIDES: Q (s_{t}, a_{t})(k) = Q(s_{t}, a_{t})(k-1) + alpha [ r_{t+1} + gamma * Q(s_{t+1}, a_{t+1})(k-1)- Q(s_{t}, a_{t})(k-1)]
