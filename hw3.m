@@ -9,7 +9,7 @@ close all
 
 % Create Q table
 
-alpha = 0.1;    %initialize learning rate (WHAT TO SET???)
+alpha = 0.01;    %initialize learning rate (WHAT TO SET???)
 gamma = 0.9; %
 grid_size = 5;
 %[X,Y] = meshgrid(grid_size);
@@ -29,14 +29,17 @@ Q = zeros(num_states, num_actions);
 Q_eps = cell(num_eps, 1);
 goals = randi([2,num_states], num_eps, num_its);    %create random goal positions, store in num_eps x num_its matrix
 
+rewards = zeros(num_eps * num_its, 1);
+
 for episode = 1:num_eps
-    %t = episode;    %extra variable t to make Q equation look cleaner
+    %t = episode    %extra variable t to make Q equation look cleaner
     %s_{t} = 1;  %place robot in upper left cell of grid
     s_t = 1;    %place robot in upper left cell of grid
+    %a_t = 3;    %arbitrary initial action
     for iteration = 1:num_its
-        %k = iteration;  % extra variable k to make Q equation look cleaner
+        %k = iteration  % extra variable k to make Q equation look cleaner
         %find max reward in row of Q-table corresponding with current state
-        [maxReward, a_next] = max(Q(s_t));
+        [maxReward, a_next] = max(Q(s_t,:));
         
         %take action
         if a_next == 1  %up
@@ -73,7 +76,6 @@ for episode = 1:num_eps
         if s_next == goals(episode,iteration)
            %robot reached goal
            r = 100;
-           iteration = num_its; %end the episode
         elseif (s_next >= 1 && s_next <= grid_size) || (mod(s_next, grid_size) == 0) || (mod(s_next, grid_size) == 1)
             %robot now in border cell
             r = -1;
@@ -83,14 +85,27 @@ for episode = 1:num_eps
         end
         
         %get max reward of new state from Q-table
-        newMax = max(Q(s_next));
+        newMax = max(Q(s_next,:));
         
         %update Q table
-        Q = Q + alpha * (r + gamma*newMax - Q);
+        Q(s_t,a_next) = Q(s_t,a_next) + alpha * (r + gamma*newMax - Q(s_t,a_next));
         %FROM SLIDES: Q (s_{t}, a_{t})(k) = Q(s_{t}, a_{t})(k-1) + alpha [ r_{t+1} + gamma * Q(s_{t+1}, a_{t+1})(k-1)- Q(s_{t}, a_{t})(k-1)]
         
         %update current state variable
         s_t = s_next;
+        
+        %update reward array (for plot)
+        rewards(((episode-1)*num_its) + iteration) = r;
+        if (r == 100)
+            iteration = num_its; %end the episode if terminal state was reached
+        end
     end
     Q_eps{episode} = Q;
 end
+
+Final_Q_Table = Q_eps{num_eps}
+
+% X = 1:num_eps+num_its;
+% Y = rewards(:);
+% plot(X,Y)
+plot(rewards)
