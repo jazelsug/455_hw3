@@ -82,8 +82,15 @@ for episode = 1:num_eps
             r = 0;
         end
         
-        %Q = Q + alpha * ();
+        %get max reward of new state from Q-table
+        newMax = max(Q(s_next));
+        
+        %update Q table
+        Q = Q + alpha * (r + gamma*newMax - Q);
         %FROM SLIDES: Q (s_{t}, a_{t})(k) = Q(s_{t}, a_{t})(k-1) + alpha [ r_{t+1} + gamma * Q(s_{t+1}, a_{t+1})(k-1)- Q(s_{t}, a_{t})(k-1)]
+        
+        %update current state variable
+        s_t = s_next;
     end
     Q_eps{episode} = Q;
 end
