@@ -7,10 +7,10 @@ close all
 
 % Q Learning (Off-Policy Control)
 
-% Create Q table
+% ========================== TRAINING =========================
 
 alpha = 0.01;    %initialize learning rate (WHAT TO SET???)
-gamma = 0.9; %
+gamma = 0.9; %WHAT TO SET???
 grid_size = 5;
 %[X,Y] = meshgrid(grid_size);
 grid = zeros(grid_size);
@@ -27,14 +27,15 @@ Q = zeros(num_states, num_actions);
 %s_ = cell(size(T), num_its);
 %a_ = cell(size(T,1), num_its);
 Q_eps = cell(num_eps, 1);
-goals = randi([2,num_states], num_eps, num_its);    %create random goal positions, store in num_eps x num_its matrix
+starts = randi([1,num_states], num_eps, num_its);   %create random start positions, store in num_eps x num_its matrix
+goals = randi([1,num_states], num_eps, num_its);    %create random goal positions
 
 rewards = zeros(num_eps * num_its, 1);
 
 for episode = 1:num_eps
     %t = episode    %extra variable t to make Q equation look cleaner
-    %s_{t} = 1;  %place robot in upper left cell of grid
     s_t = 1;    %place robot in upper left cell of grid
+    %s_t = starts(episode, 1);
     %a_t = 3;    %arbitrary initial action
     for iteration = 1:num_its
         %k = iteration  % extra variable k to make Q equation look cleaner
@@ -105,7 +106,6 @@ end
 
 Final_Q_Table = Q_eps{num_eps}
 
-% X = 1:num_eps+num_its;
-% Y = rewards(:);
-% plot(X,Y)
 plot(rewards)
+xlabel('Iterations');
+ylabel('Reward');
