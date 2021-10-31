@@ -11,6 +11,7 @@ close all
 
 alpha = 0.95;    %initialize learning rate (WHAT TO SET???)
 gamma = 0.05; %WHAT TO SET???
+epsilon = 0.4;
 grid_size = 5;
 %[X,Y] = meshgrid(grid_size);
 grid = zeros(grid_size);
@@ -45,11 +46,13 @@ for episode = 1:num_eps
         %k = iteration  % extra variable k to make Q equation look cleaner
         %find max reward in row of Q-table corresponding with current state
         totalits = totalits + 1;
-        [maxReward, max_actions] = max(Q(s_t,:));
-        
-        %select random a_next if there are multiple maximums
-        pos = length(max_actions);
-        a_next = max_actions(pos);
+%         [maxReward, max_actions] = max(Q(s_t,:));
+%         
+%         %select random a_next if there are multiple maximums
+%         pos = length(max_actions);
+%         a_next = max_actions(pos);
+
+        a_next = select_action(Q, s_t, epsilon, num_actions);
         
         %take action
         if a_next == 1  %up
@@ -162,11 +165,12 @@ for t=1:100
     end
 end
 
-function a = select_action(Q, S, epsilon)
+function a = select_action(Q, S, epsilon, num_actions)
     n = randi([0,1]);
     if n < epsilon
         a = randi([1,num_actions]);
     else
-        a = max(Q(S,:));
+        [maxReward, max_actions] = max(Q(S,:));
+        a = max_actions(1);
     end
 end
