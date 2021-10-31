@@ -100,12 +100,18 @@ for episode = 1:num_eps
             r = 0;
         end
         
-%         if ismember(s_next, moves)
-%             %new state had already been visited in this episode
-%             r = r - 4;
+%         if iteration > 2
+%             if s_next == moves(iteration-2)%ismember(s_next, moves)
+%                 %new state had already been visited in this episode
+%                 r = r - 0.5;
+%             end
+%         elseif iteration == 2
+%             if s_next == 1
+%                 r = r - 0.5;
+%             end
 %         end
-        
-        %moves(iteration) = s_next;
+%         
+%         moves(iteration) = s_next;
         
         %get max reward of new state from Q-table
         newMax = max(Q(s_next,:));
