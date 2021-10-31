@@ -161,3 +161,12 @@ for t=1:100
         break
     end
 end
+
+function a = select_action(Q, S, epsilon)
+    n = randi([0,1]);
+    if n < epsilon
+        a = randi([1,num_actions]);
+    else
+        a = max(Q(S,:));
+    end
+end
