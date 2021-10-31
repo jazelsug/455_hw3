@@ -20,9 +20,9 @@ S = 1:num_states
 num_actions = 4;
 A = 1:num_actions % 1-up, 2-down, 3-right, 4-left
 num_eps = 6;
-num_its = 100;
+num_its = 180;
 %Q = cell(num_states, num_actions);   % create initial Q-table  zeros(num_states, 4)
-Q = randi([1,10], num_states, num_actions); %zeros(num_states, num_actions);
+Q = randi([1,5], num_states, num_actions); %zeros(num_states, num_actions);
 Q(25, :) = 0;
 %s_ = cell(size(T), num_its);
 %a_ = cell(size(T,1), num_its);
@@ -97,7 +97,11 @@ for episode = 1:num_eps
             r = -1;
         else
             %all other actions
-            r = 0;
+            if ismember(s_next, moves)
+                r = 0;
+            else
+                r = 0.3;
+            end
         end
         
 %         if iteration > 2
@@ -111,7 +115,7 @@ for episode = 1:num_eps
 %             end
 %         end
 %         
-%         moves(iteration) = s_next;
+        moves(iteration) = s_next;
         
         %get max reward of new state from Q-table
         newMax = max(Q(s_next,:));
