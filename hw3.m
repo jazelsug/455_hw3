@@ -9,26 +9,24 @@ close all
 
 % ========================== TRAINING =========================
 
-alpha = 0.8;    %initialize learning rate (WHAT TO SET???)
-gamma = 0.2; %WHAT TO SET???
+alpha = 0.95;    %initialize learning rate (WHAT TO SET???)
+gamma = 0.05; %WHAT TO SET???
 grid_size = 5;
 %[X,Y] = meshgrid(grid_size);
 grid = zeros(grid_size);
 num_states = grid_size * grid_size;
-S = 1:num_states;
+S = 1:num_states
 num_actions = 4;
-A = 1:num_actions; % 1-up, 2-down, 3-right, 4-left
+A = 1:num_actions % 1-up, 2-down, 3-right, 4-left
 num_eps = 6;
 num_its = 100;
-delta_t_update = 0.008;
-%T = 0:delta_t_update:7; % Set simulation time
 %Q = cell(num_states, num_actions);   % create initial Q-table  zeros(num_states, 4)
 Q = randi([1,10], num_states, num_actions); %zeros(num_states, num_actions);
 Q(25, :) = 0;
 %s_ = cell(size(T), num_its);
 %a_ = cell(size(T,1), num_its);
 Q_eps = cell(num_eps, 1);
-starts = randi([1,num_states], num_eps, num_its);   %create random start positions, store in num_eps x num_its matrix
+%starts = randi([1,num_states], num_eps, num_its);   %create random start positions, store in num_eps x num_its matrix
 %goals = randi([1,num_states], num_eps, num_its);    %create random goal positions
 goal = 25;
 
@@ -40,8 +38,8 @@ totalits = 0;
 
 for episode = 1:num_eps
     %t = episode    %extra variable t to make Q equation look cleaner
-    %s_t = 1;    %place robot in upper left cell of grid
-    s_t = starts(episode, 1);
+    s_t = 1;    %place robot in upper left cell of grid
+    %s_t = starts(episode, 1);
     %a_t = 3;    %arbitrary initial action
     for iteration = 1:num_its
         %k = iteration  % extra variable k to make Q equation look cleaner
@@ -121,9 +119,45 @@ end
 
 Final_Q_Table = Q_eps{num_eps}
 
-plot(rewards)
+figure(1), plot(rewards)
 xlabel('Iterations');
 ylabel('Reward');
 for i=1:num_eps
     xline(endsofeps(i)); %vertical lines divide each episode
+end
+
+
+% ========================== TASK =========================
+
+s_t = 1;
+goal = 25;
+
+task_steps = [];
+
+for t=1:100
+    [maxReward, max_actions] = max(Q(s_t,:));
+
+    %select random a_next if there are multiple maximums
+    pos = length(max_actions);
+    a_next = max_actions(pos);
+
+    %take action
+    if a_next == 1  %up
+        s_next = s_t - grid_size;
+    elseif a_next == 2  %down
+        s_next = s_t + grid_size;
+    elseif a_next == 3 %right
+        s_next = s_t + 1;
+    else   %left
+        s_next = s_t - 1;
+    end
+
+    %update current state variable
+    s_t = s_next;
+    task_steps(t) = s_t;
+
+    %update reward array (for plot)
+    if (s_t == 25)
+        break
+    end
 end
