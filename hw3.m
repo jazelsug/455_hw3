@@ -32,8 +32,9 @@ starts = randi([1,num_states], num_eps, num_its);   %create random start positio
 %goals = randi([1,num_states], num_eps, num_its);    %create random goal positions
 goal = 25;
 
-rewards = zeros(num_eps * num_its, 1);
+rewards = [];
 s_next_record = zeros(num_eps * num_its, 1);
+endsofeps = zeros(num_eps, 1);
 
 totalits = 0;
 
@@ -108,13 +109,14 @@ for episode = 1:num_eps
         s_t = s_next;
         
         %update reward array (for plot)
-        rewards(((episode-1)*num_its) + iteration) = r;
+        rewards(totalits) = r;
         if (r == 100)
             iteration = num_its; %end the episode if terminal state was reached - DOES IT WORK??
             break
         end
     end
     Q_eps{episode} = Q;
+    endsofeps(episode) = totalits;
 end
 
 Final_Q_Table = Q_eps{num_eps}
@@ -122,3 +124,6 @@ Final_Q_Table = Q_eps{num_eps}
 plot(rewards)
 xlabel('Iterations');
 ylabel('Reward');
+for i=1:num_eps
+    xline(endsofeps(i)); %vertical lines divide each episode
+end
