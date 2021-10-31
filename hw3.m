@@ -11,7 +11,7 @@ close all
 
 alpha = 0.95;    %initialize learning rate (WHAT TO SET???)
 gamma = 0.05; %WHAT TO SET???
-epsilon = 0.4;
+epsilon = 0.05;
 grid_size = 5;
 %[X,Y] = meshgrid(grid_size);
 grid = zeros(grid_size);
@@ -42,6 +42,7 @@ for episode = 1:num_eps
     s_t = 1;    %place robot in upper left cell of grid
     %s_t = starts(episode, 1);
     %a_t = 3;    %arbitrary initial action
+    moves = [];
     for iteration = 1:num_its
         %k = iteration  % extra variable k to make Q equation look cleaner
         %find max reward in row of Q-table corresponding with current state
@@ -98,6 +99,13 @@ for episode = 1:num_eps
             %all other actions
             r = 0;
         end
+        
+%         if ismember(s_next, moves)
+%             %new state had already been visited in this episode
+%             r = r - 4;
+%         end
+        
+        %moves(iteration) = s_next;
         
         %get max reward of new state from Q-table
         newMax = max(Q(s_next,:));
