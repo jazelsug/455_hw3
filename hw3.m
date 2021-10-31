@@ -1,6 +1,6 @@
 % Name: hw3.m
 % Author: Jazel A. Suguitan
-% Last Modified: Oct. 27, 2021
+% Last Modified: Oct. 30, 2021
 
 clc,clear
 close all
@@ -9,8 +9,8 @@ close all
 
 % ========================== TRAINING =========================
 
-alpha = 0.01;    %initialize learning rate (WHAT TO SET???)
-gamma = 0.9; %WHAT TO SET???
+alpha = 0.8;    %initialize learning rate (WHAT TO SET???)
+gamma = 0.2; %WHAT TO SET???
 grid_size = 5;
 %[X,Y] = meshgrid(grid_size);
 grid = zeros(grid_size);
@@ -28,19 +28,28 @@ Q = zeros(num_states, num_actions);
 %a_ = cell(size(T,1), num_its);
 Q_eps = cell(num_eps, 1);
 starts = randi([1,num_states], num_eps, num_its);   %create random start positions, store in num_eps x num_its matrix
-goals = randi([1,num_states], num_eps, num_its);    %create random goal positions
+%goals = randi([1,num_states], num_eps, num_its);    %create random goal positions
+goal = 25;
 
 rewards = zeros(num_eps * num_its, 1);
+s_next_record = zeros(num_eps * num_its, 1);
+
+totalits = 0;
 
 for episode = 1:num_eps
     %t = episode    %extra variable t to make Q equation look cleaner
-    s_t = 1;    %place robot in upper left cell of grid
-    %s_t = starts(episode, 1);
+    %s_t = 1;    %place robot in upper left cell of grid
+    s_t = starts(episode, 1);
     %a_t = 3;    %arbitrary initial action
     for iteration = 1:num_its
         %k = iteration  % extra variable k to make Q equation look cleaner
         %find max reward in row of Q-table corresponding with current state
-        [maxReward, a_next] = max(Q(s_t,:));
+        totalits = totalits + 1;
+        [maxReward, max_actions] = max(Q(s_t,:));
+        
+        %select random a_next if there are multiple maximums
+        pos = length(max_actions);
+        a_next = max_actions(pos);
         
         %take action
         if a_next == 1  %up
@@ -73,8 +82,10 @@ for episode = 1:num_eps
             end
         end
         
+        s_next_record(totalits) = s_next;
+        
         %assign reward from new state after taken action
-        if s_next == goals(episode,iteration)
+        if s_next == goal %goals(episode,iteration)
            %robot reached goal
            r = 100;
         elseif (s_next >= 1 && s_next <= grid_size) || (mod(s_next, grid_size) == 0) || (mod(s_next, grid_size) == 1)
@@ -98,7 +109,8 @@ for episode = 1:num_eps
         %update reward array (for plot)
         rewards(((episode-1)*num_its) + iteration) = r;
         if (r == 100)
-            iteration = num_its; %end the episode if terminal state was reached
+            iteration = num_its; %end the episode if terminal state was reached - DOES IT WORK??
+            break
         end
     end
     Q_eps{episode} = Q;
