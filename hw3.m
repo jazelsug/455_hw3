@@ -24,7 +24,6 @@ Q_eps = cell(num_eps, 1);
 %goals = randi([1,num_states], num_eps, num_its);    %create random goal positions
 start = 1;
 goal = 25;
-%Q = cell(num_states, num_actions);   % create initial Q-table  zeros(num_states, 4)
 Q = randi([1,5], num_states, num_actions); %zeros(num_states, num_actions);
 Q(goal, :) = 0;
 
@@ -37,11 +36,10 @@ actions = []; %store actions taken at each iteration
 for episode = 1:num_eps
     s_t = start;    %place robot in upper left cell of grid
     %s_t = starts(episode, 1);
-    %a_t = 3;    %arbitrary initial action
     moves = [];
     for iteration = 1:num_its
         %find max reward in row of Q-table corresponding with current state
-        totalits = totalits + 1;
+        totalits = totalits + 1;    %increment total number of iterations
 %         [maxReward, max_actions] = max(Q(s_t,:));
 %         
 %         %select random a_next if there are multiple maximums
@@ -50,7 +48,7 @@ for episode = 1:num_eps
 
         states(totalits) = s_t; %store current state
 
-        a_next = select_action(Q, s_t, epsilon, num_actions);
+        a_next = select_action(Q, s_t, epsilon, num_actions);   %choose action
                 
         actions(totalits) = a_next;   %store action taken at current state
         
@@ -92,27 +90,15 @@ for episode = 1:num_eps
         elseif (s_next >= 1 && s_next <= grid_size) || (mod(s_next, grid_size) == 0) || (mod(s_next, grid_size) == 1)
             %robot now in border cell
             r = -1;
+        elseif ismember(s_next, moves)
+            %robot revisited a cell it has already explored
+            r = 0;
         else
             %all other actions
-            if ismember(s_next, moves)
-                r = 0;
-            else
-                r = 0.3;
-            end
+            r = 0.3;
         end
-        
-%         if iteration > 2
-%             if s_next == moves(iteration-2)%ismember(s_next, moves)
-%                 %new state had already been visited in this episode
-%                 r = r - 0.5;
-%             end
-%         elseif iteration == 2
-%             if s_next == 1
-%                 r = r - 0.5;
-%             end
-%         end
-%         
-        moves(iteration) = s_next;
+     
+        moves(iteration) = s_next;  %keep track states for current episode only
         
         %get max reward of new state from Q-table
         newMax = max(Q(s_next,:));
@@ -126,17 +112,18 @@ for episode = 1:num_eps
         
         %update reward array (for plot)
         rewards(totalits) = r;
-        if (r == 100)
-            %iteration = num_its; %end the episode if terminal state was reached - DOES IT WORK??
+        
+        if (r == 100) %goal has been reached -> end episode
             break
         end
     end
-    Q_eps{episode} = Q;
-    endsofeps(episode) = totalits;
+    Q_eps{episode} = Q; %store Q table for each episode
+    endsofeps(episode) = totalits; %store iteration each episode ended on
 end
 
-Final_Q_Table = Q_eps{num_eps}
+Final_Q_Table = Q_eps{num_eps}  %output final q table
 
+%plot rewards for all iterations
 figure(1), plot(rewards)
 xlabel('Iterations');
 ylabel('Reward');
