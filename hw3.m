@@ -1,6 +1,6 @@
 % Name: hw3.m
 % Author: Jazel A. Suguitan
-% Last Modified: Oct. 30, 2021
+% Last Modified: Nov. 1, 2021
 
 clc,clear
 close all
@@ -131,7 +131,7 @@ for episode = 1:num_eps
         %update reward array (for plot)
         rewards(totalits) = r;
         if (r == 100)
-            iteration = num_its; %end the episode if terminal state was reached - DOES IT WORK??
+            %iteration = num_its; %end the episode if terminal state was reached - DOES IT WORK??
             break
         end
     end
@@ -155,6 +155,9 @@ width = 1;  %width of cell
 height = 1; %height of cell
 nrow = grid_size;
 ncol = grid_size;
+
+%plot for first/initial episode
+%create grid
 figure(2),hold on
 for i = 1:nrow
     yy = y + (i-1)*height;
@@ -165,16 +168,53 @@ for i = 1:nrow
     end
 end
 
-%plot for first/initial episode
 for i = 1:endsofeps(1)
     state = states(i);
     action = actions(i);
     
     %calculate position of arrow
-    x_value = mod(state, grid_size) + 0.5; %+0.5 to be in middle of cell
     if mod(state, grid_size) == 0
+        x_value = grid_size - 0.5; %-0.5 to be in middle of cell
         y_value = grid_size - (state/grid_size) + 1 - 0.5; %-0.5 to be in middle of cell
     else
+        x_value = mod(state, grid_size) - 0.5; %-0.5 to be in middle of cell
+        y_value = grid_size - floor(state/grid_size) - 0.5; %-0.5 to be in middle of cell
+    end
+     
+    %draw arrow
+    if action == 1 %up
+        quiver(x_value, y_value, 0, 0.3, 'b', 'LineWidth', 1.5);
+    elseif action == 2 %down
+        quiver(x_value, y_value, 0, -0.3, 'b', 'LineWidth', 1.5);
+    elseif action == 3 %right
+        quiver(x_value, y_value, 0.3, 0, 'b', 'LineWidth', 1.5);
+    else %left
+        quiver(x_value, y_value, -0.3, 0, 'b', 'LineWidth', 1.5);
+    end
+end
+
+%plot for final episode
+%create grid
+figure(3), hold on
+for i = 1:nrow
+    yy = y + (i-1)*height;
+    for j = 1:ncol
+        xx = x + (j-1)*width;
+          %rectangle('position',[xx,yy,width,height],'facecolor',rand(3,1))
+          rectangle('position',[xx,yy,width,height])
+    end
+end
+
+for i = endsofeps(num_eps-1)+1:endsofeps(num_eps)
+    state = states(i);
+    action = actions(i);
+    
+    %calculate position of arrow
+    if mod(state, grid_size) == 0
+        x_value = grid_size - 0.5; %-0.5 to be in middle of cell
+        y_value = grid_size - (state/grid_size) + 1 - 0.5; %-0.5 to be in middle of cell
+    else
+        x_value = mod(state, grid_size) - 0.5; %-0.5 to be in middle of cell
         y_value = grid_size - floor(state/grid_size) - 0.5; %-0.5 to be in middle of cell
     end
     
@@ -189,6 +229,7 @@ for i = 1:endsofeps(1)
         quiver(x_value, y_value, -0.3, 0, 'b', 'LineWidth', 1.5);
     end
 end
+
 
 % ========================== TASK =========================
 
