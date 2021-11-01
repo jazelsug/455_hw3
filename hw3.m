@@ -12,24 +12,20 @@ close all
 alpha = 0.95;    %initialize learning rate (WHAT TO SET???)
 gamma = 0.05; %WHAT TO SET???
 epsilon = 0.05;
-grid_size = 5;
-%[X,Y] = meshgrid(grid_size);
-grid = zeros(grid_size);
+grid_size = 10;
 num_states = grid_size * grid_size;
 S = 1:num_states
 num_actions = 4;
 A = 1:num_actions % 1-up, 2-down, 3-right, 4-left
 num_eps = 6;
 num_its = 180;
-%Q = cell(num_states, num_actions);   % create initial Q-table  zeros(num_states, 4)
-Q = randi([1,5], num_states, num_actions); %zeros(num_states, num_actions);
-Q(25, :) = 0;
-%s_ = cell(size(T), num_its);
-%a_ = cell(size(T,1), num_its);
 Q_eps = cell(num_eps, 1);
 %starts = randi([1,num_states], num_eps, num_its);   %create random start positions, store in num_eps x num_its matrix
 %goals = randi([1,num_states], num_eps, num_its);    %create random goal positions
-goal = 25;
+goal = 70;
+%Q = cell(num_states, num_actions);   % create initial Q-table  zeros(num_states, 4)
+Q = randi([1,5], num_states, num_actions); %zeros(num_states, num_actions);
+Q(goal, :) = 0;
 
 rewards = [];   %store reward for each action
 endsofeps = zeros(num_eps, 1);  %store which iterations mark ends of episodes
@@ -54,8 +50,7 @@ for episode = 1:num_eps
         states(totalits) = s_t; %store current state
 
         a_next = select_action(Q, s_t, epsilon, num_actions);
-        
-        
+                
         actions(totalits) = a_next;   %store action taken at current state
         
         %take action
@@ -261,7 +256,7 @@ for t=1:num_its
     task_steps(t) = s_t;
 
     %update reward array (for plot)
-    if (s_t == 25)
+    if (s_t == goal)
         break
     end
 end
