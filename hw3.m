@@ -180,13 +180,13 @@ for i = 1:endsofeps(1)
     
     %draw arrow
     if action == 1 %up
-        quiver(x_value, y_value, 0, 0.3, 'b', 'LineWidth', 1);
+        quiver(x_value, y_value, 0, 0.3, 'b', 'LineWidth', 1.5);
     elseif action == 2 %down
-        %
+        quiver(x_value, y_value, 0, -0.3, 'b', 'LineWidth', 1.5);
     elseif action == 3 %right
-        %
+        quiver(x_value, y_value, 0.3, 0, 'b', 'LineWidth', 1.5);
     else %left
-        %
+        quiver(x_value, y_value, -0.3, 0, 'b', 'LineWidth', 1.5);
     end
 end
 
