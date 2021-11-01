@@ -169,9 +169,15 @@ for i = 1:nrow
           elseif mod(start,grid_size) == j && (nrow - floor(start/grid_size) == i)
               %start cell is not a multiple of the grid_size
               r.FaceColor = 'green';
+          end
 
-%           elseif j*i == goal
-%               r.FaceColor = 'red';
+        %make goal cell red
+          if mod(goal, grid_size) == 0 && j == ncol && (nrow -(goal/grid_size) + 1 == i)
+              %start cell is a multiple of the grid_size
+              r.FaceColor = 'red';
+          elseif mod(goal,grid_size) == j && (nrow - floor(goal/grid_size) == i)
+              %start cell is not a multiple of the grid_size
+              r.FaceColor = 'red';
           end
     end
 end
@@ -209,7 +215,25 @@ for i = 1:nrow
     for j = 1:ncol
         xx = x + (j-1)*width;
           %rectangle('position',[xx,yy,width,height],'facecolor',rand(3,1))
-          rectangle('position',[xx,yy,width,height])
+          r = rectangle('position',[xx,yy,width,height]);
+          
+          %make start cell green
+          if mod(start, grid_size) == 0 && j == ncol && (nrow -(start/grid_size) + 1 == i)
+              %start cell is a multiple of the grid_size
+              r.FaceColor = 'green';
+          elseif mod(start,grid_size) == j && (nrow - floor(start/grid_size) == i)
+              %start cell is not a multiple of the grid_size
+              r.FaceColor = 'green';
+          end
+
+        %make goal cell red
+          if mod(goal, grid_size) == 0 && j == ncol && (nrow -(goal/grid_size) + 1 == i)
+              %start cell is a multiple of the grid_size
+              r.FaceColor = 'red';
+          elseif mod(goal,grid_size) == j && (nrow - floor(goal/grid_size) == i)
+              %start cell is not a multiple of the grid_size
+              r.FaceColor = 'red';
+          end
     end
 end
 
