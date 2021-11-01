@@ -12,7 +12,7 @@ close all
 alpha = 0.95;    %initialize learning rate (WHAT TO SET???)
 gamma = 0.05; %WHAT TO SET???
 epsilon = 0.05;
-grid_size = 10;
+grid_size = 5;
 num_states = grid_size * grid_size;
 S = 1:num_states
 num_actions = 4;
@@ -22,7 +22,8 @@ num_its = 180;
 Q_eps = cell(num_eps, 1);
 %starts = randi([1,num_states], num_eps, num_its);   %create random start positions, store in num_eps x num_its matrix
 %goals = randi([1,num_states], num_eps, num_its);    %create random goal positions
-goal = 70;
+start = 1;
+goal = 25;
 %Q = cell(num_states, num_actions);   % create initial Q-table  zeros(num_states, 4)
 Q = randi([1,5], num_states, num_actions); %zeros(num_states, num_actions);
 Q(goal, :) = 0;
@@ -34,7 +35,7 @@ states = [];    %store states for each iteration
 actions = []; %store actions taken at each iteration
 
 for episode = 1:num_eps
-    s_t = 1;    %place robot in upper left cell of grid
+    s_t = start;    %place robot in upper left cell of grid
     %s_t = starts(episode, 1);
     %a_t = 3;    %arbitrary initial action
     moves = [];
@@ -159,7 +160,19 @@ for i = 1:nrow
     for j = 1:ncol
         xx = x + (j-1)*width;
           %rectangle('position',[xx,yy,width,height],'facecolor',rand(3,1))
-          rectangle('position',[xx,yy,width,height])
+          r = rectangle('position',[xx,yy,width,height]);
+          
+          %make start cell green
+          if mod(start, grid_size) == 0 && j == ncol && (nrow -(start/grid_size) + 1 == i)
+              %start cell is a multiple of the grid_size
+              r.FaceColor = 'green';
+          elseif mod(start,grid_size) == j && (nrow - floor(start/grid_size) == i)
+              %start cell is not a multiple of the grid_size
+              r.FaceColor = 'green';
+
+%           elseif j*i == goal
+%               r.FaceColor = 'red';
+          end
     end
 end
 
