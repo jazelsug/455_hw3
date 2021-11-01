@@ -340,6 +340,24 @@ end
 
 
 function a = select_action(Q, S, epsilon, num_actions)
+%     A function for selecting the action for the robot to take. Uses epsilon-greedy policy.
+%     
+%     Parameters
+%     ------------
+%     Q : double matrix
+%         The current Q table, size grid_size x num_actions
+%     S : double array
+%         The total list of states, size grid_size x grid_size
+%     epsilon : double
+%         A small constant used for epsilon-greedy policy
+%     num_actions : double
+%         The number of actions the robot can take
+%         
+%     Returns
+%     ------------
+%     a : double
+%         The selected action to robot will take
+
     n = randi([0,1]);
     if n < epsilon
         a = randi([1,num_actions]);
