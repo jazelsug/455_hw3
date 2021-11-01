@@ -275,7 +275,7 @@ end
 %     %update current state variable
 %     s_t = s_next;
 % 
-%     %update reward array (for plot)
+%     %goal was reached
 %     if (s_t == goal)
 %         break
 %     end
