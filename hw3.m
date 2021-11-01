@@ -147,6 +147,23 @@ for i=1:num_eps
     xline(endsofeps(i)); %vertical lines divide each episode
 end
 
+% ========================== ACTION SELECTION PLOTS =========================
+x = 0;  %value that x-axis starts at
+y = 0;  %value that y-axis starts at
+width = 1;  %width of cell
+height = 1; %height of cell
+nrow = grid_size;
+ncol = grid_size;
+figure(2),hold on
+for i = 1:nrow
+    yy = y + (i-1)*height;
+    for j = 1:ncol
+        xx = x + (j-1)*width;
+          %rectangle('position',[xx,yy,width,height],'facecolor',rand(3,1))
+          rectangle('position',[xx,yy,width,height])
+      end
+  end
+
 
 % ========================== TASK =========================
 
@@ -155,7 +172,7 @@ goal = 25;
 
 task_steps = [];
 
-for t=1:100
+for t=1:num_its
     [maxReward, max_actions] = max(Q(s_t,:));
 
     %select random a_next if there are multiple maximums
