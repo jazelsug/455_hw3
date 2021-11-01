@@ -31,20 +31,18 @@ Q_eps = cell(num_eps, 1);
 %goals = randi([1,num_states], num_eps, num_its);    %create random goal positions
 goal = 25;
 
-rewards = [];
-s_next_record = zeros(num_eps * num_its, 1);
-endsofeps = zeros(num_eps, 1);
-
-totalits = 0;
+rewards = [];   %store reward for each action
+endsofeps = zeros(num_eps, 1);  %store which iterations mark ends of episodes
+totalits = 0; %counter of total iterations
+states = [];    %store states for each iteration
+actions = []; %store actions taken at each iteration
 
 for episode = 1:num_eps
-    %t = episode    %extra variable t to make Q equation look cleaner
     s_t = 1;    %place robot in upper left cell of grid
     %s_t = starts(episode, 1);
     %a_t = 3;    %arbitrary initial action
     moves = [];
     for iteration = 1:num_its
-        %k = iteration  % extra variable k to make Q equation look cleaner
         %find max reward in row of Q-table corresponding with current state
         totalits = totalits + 1;
 %         [maxReward, max_actions] = max(Q(s_t,:));
@@ -53,7 +51,12 @@ for episode = 1:num_eps
 %         pos = length(max_actions);
 %         a_next = max_actions(pos);
 
+        states(totalits) = s_t; %store current state
+
         a_next = select_action(Q, s_t, epsilon, num_actions);
+        
+        
+        actions(totalits) = a_next;   %store action taken at current state
         
         %take action
         if a_next == 1  %up
@@ -85,8 +88,6 @@ for episode = 1:num_eps
                 s_next = s_t - 1;
             end
         end
-        
-        s_next_record(totalits) = s_next;
         
         %assign reward from new state after taken action
         if s_next == goal %goals(episode,iteration)
@@ -161,9 +162,33 @@ for i = 1:nrow
         xx = x + (j-1)*width;
           %rectangle('position',[xx,yy,width,height],'facecolor',rand(3,1))
           rectangle('position',[xx,yy,width,height])
-      end
-  end
+    end
+end
 
+%plot for first/initial episode
+for i = 1:endsofeps(1)
+    state = states(i);
+    action = actions(i);
+    
+    %calculate position of arrow
+    x_value = mod(state, grid_size) + 0.5; %+0.5 to be in middle of cell
+    if mod(state, grid_size) == 0
+        y_value = grid_size - (state/grid_size) + 1 - 0.5; %-0.5 to be in middle of cell
+    else
+        y_value = grid_size - floor(state/grid_size) - 0.5; %-0.5 to be in middle of cell
+    end
+    
+    %draw arrow
+    if action == 1 %up
+        quiver(x_value, y_value, 0, 0.3, 'b', 'LineWidth', 1);
+    elseif action == 2 %down
+        %
+    elseif action == 3 %right
+        %
+    else %left
+        %
+    end
+end
 
 % ========================== TASK =========================
 
