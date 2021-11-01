@@ -9,8 +9,8 @@ close all
 
 % ========================== TRAINING =========================
 
-alpha = 0.95;    %initialize learning rate (WHAT TO SET???)
-gamma = 0.05; %WHAT TO SET???
+alpha = 0.95;
+gamma = 0.05;
 epsilon = 0.05;
 grid_size = 5;
 num_states = grid_size * grid_size;
@@ -19,13 +19,14 @@ num_actions = 4;
 A = 1:num_actions % 1-up, 2-down, 3-right, 4-left
 num_eps = 6;
 num_its = 180;
-Q_eps = cell(num_eps, 1);
+Q_eps = cell(num_eps, 1);   %store Q-tables for each episode
 %starts = randi([1,num_states], num_eps, num_its);   %create random start positions, store in num_eps x num_its matrix
 %goals = randi([1,num_states], num_eps, num_its);    %create random goal positions
-start = 1;
-goal = 25;
-Q = randi([1,5], num_states, num_actions); %zeros(num_states, num_actions);
-Q(goal, :) = 0;
+start = 1;  %starting cell
+goal = 25;  %terminal cell
+
+Q = randi([1,5], num_states, num_actions); %initialize Q table with arbitrary values
+Q(goal, :) = 0; %initialize Q values for terminal state = 0
 
 rewards = [];   %store reward for each action
 endsofeps = zeros(num_eps, 1);  %store which iterations mark ends of episodes
@@ -38,13 +39,7 @@ for episode = 1:num_eps
     %s_t = starts(episode, 1);
     moves = [];
     for iteration = 1:num_its
-        %find max reward in row of Q-table corresponding with current state
         totalits = totalits + 1;    %increment total number of iterations
-%         [maxReward, max_actions] = max(Q(s_t,:));
-%         
-%         %select random a_next if there are multiple maximums
-%         pos = length(max_actions);
-%         a_next = max_actions(pos);
 
         states(totalits) = s_t; %store current state
 
@@ -121,9 +116,10 @@ for episode = 1:num_eps
     endsofeps(episode) = totalits; %store iteration each episode ended on
 end
 
-Final_Q_Table = Q_eps{num_eps}  %output final q table
+% OUTPUT FINAL Q TABLE
+Final_Q_Table = Q_eps{num_eps}
 
-%plot rewards for all iterations
+% PLOT REWARDS FOR ALL ITERATIONS
 figure(1), plot(rewards)
 xlabel('Iterations');
 ylabel('Reward');
@@ -252,38 +248,96 @@ end
 
 % ========================== TASK =========================
 
-s_t = 1;
-goal = 25;
+% s_t = 1;
+% goal = 25;
+% 
+% task_states = [];    %store states for each iteration
+% task_actions = []; %store actions taken at each iteration
+% 
+% for t=1:num_its
+%     task_states(t) = s_t;
+%     
+%     a_next = select_action(Q, s_t, epsilon, num_actions);   %choose action
+%     
+%     task_actions(t) = a_next;
+% 
+%     %take action
+%     if a_next == 1  %up
+%         s_next = s_t - grid_size;
+%     elseif a_next == 2  %down
+%         s_next = s_t + grid_size;
+%     elseif a_next == 3 %right
+%         s_next = s_t + 1;
+%     else   %left
+%         s_next = s_t - 1;
+%     end
+% 
+%     %update current state variable
+%     s_t = s_next;
+% 
+%     %update reward array (for plot)
+%     if (s_t == goal)
+%         break
+%     end
+% end
+% 
+% task_its = t;
+% 
+% %plot for task
+% %create grid
+% figure(4), hold on
+% for i = 1:nrow
+%     yy = y + (i-1)*height;
+%     for j = 1:ncol
+%         xx = x + (j-1)*width;
+%           %rectangle('position',[xx,yy,width,height],'facecolor',rand(3,1))
+%           r = rectangle('position',[xx,yy,width,height]);
+%           
+%           %make start cell green
+%           if mod(start, grid_size) == 0 && j == ncol && (nrow -(start/grid_size) + 1 == i)
+%               %start cell is a multiple of the grid_size
+%               r.FaceColor = 'green';
+%           elseif mod(start,grid_size) == j && (nrow - floor(start/grid_size) == i)
+%               %start cell is not a multiple of the grid_size
+%               r.FaceColor = 'green';
+%           end
+% 
+%         %make goal cell red
+%           if mod(goal, grid_size) == 0 && j == ncol && (nrow -(goal/grid_size) + 1 == i)
+%               %start cell is a multiple of the grid_size
+%               r.FaceColor = 'red';
+%           elseif mod(goal,grid_size) == j && (nrow - floor(goal/grid_size) == i)
+%               %start cell is not a multiple of the grid_size
+%               r.FaceColor = 'red';
+%           end
+%     end
+% end
+% 
+% for i = 1:task_its
+%     state = task_states(i);
+%     action = task_actions(i);
+%     
+%     %calculate position of arrow
+%     if mod(state, grid_size) == 0
+%         x_value = grid_size - 0.5; %-0.5 to be in middle of cell
+%         y_value = grid_size - (state/grid_size) + 1 - 0.5; %-0.5 to be in middle of cell
+%     else
+%         x_value = mod(state, grid_size) - 0.5; %-0.5 to be in middle of cell
+%         y_value = grid_size - floor(state/grid_size) - 0.5; %-0.5 to be in middle of cell
+%     end
+%     
+%     %draw arrow
+%     if action == 1 %up
+%         quiver(x_value, y_value, 0, 0.3, 'b', 'LineWidth', 1.5);
+%     elseif action == 2 %down
+%         quiver(x_value, y_value, 0, -0.3, 'b', 'LineWidth', 1.5);
+%     elseif action == 3 %right
+%         quiver(x_value, y_value, 0.3, 0, 'b', 'LineWidth', 1.5);
+%     else %left
+%         quiver(x_value, y_value, -0.3, 0, 'b', 'LineWidth', 1.5);
+%     end
+% end
 
-task_steps = [];
-
-for t=1:num_its
-    [maxReward, max_actions] = max(Q(s_t,:));
-
-    %select random a_next if there are multiple maximums
-    pos = length(max_actions);
-    a_next = max_actions(pos);
-
-    %take action
-    if a_next == 1  %up
-        s_next = s_t - grid_size;
-    elseif a_next == 2  %down
-        s_next = s_t + grid_size;
-    elseif a_next == 3 %right
-        s_next = s_t + 1;
-    else   %left
-        s_next = s_t - 1;
-    end
-
-    %update current state variable
-    s_t = s_next;
-    task_steps(t) = s_t;
-
-    %update reward array (for plot)
-    if (s_t == goal)
-        break
-    end
-end
 
 function a = select_action(Q, S, epsilon, num_actions)
     n = randi([0,1]);
